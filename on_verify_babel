@@ -15,9 +15,19 @@
 # feature may be dropped (by communicating only routes that are actually
 # needed instead of everything).
 set -ix
+export LANG=de_DE.UTF-8
+
+function confline # get first line from file $1 mathing $2, stripped of # and ; comment lines, stripped spaces and tabs down
+ {
+  echo $(cat $1|grep -v '^$\|^\s*\#'|sed -e "s/[[:space:]]\+/ /g"|sed s/^\ //|sed s/\;//|grep -i "$2"|head -n 1)
+ }
+
 # things to adjust to your server
-MINPEERS=50
-BUFFERPERCENTAGE=10
+fastdconf="/etc/fastd/sn4/main.conf"
+BATCTL=$(confline $fastdconf //\ batctl|cut -d ' ' -f 3)
+MINPEERS=$(confline $fastdconf //\ minpeers|cut -d ' ' -f 3)
+MAXPEERS=$(confline $fastdconf peer\ limit|cut -d ' ' -f 3)
+BUFFERPERCENTAGE=$(confline $fastdconf //\ bufferpercentage|cut -d ' ' -f 3)
 NODENETPREFIX="2a06:8187:fbab:1:"
 NODENETINTERFACE="(mesh-vpn-1312|mesh-vpn-1492) "
 GWINTERFACE="(mesh-vpn) "
